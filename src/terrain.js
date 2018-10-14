@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import { config } from './config'
-import { drawBox } from './draw'
 import { possibleShapes } from './possible-shapes'
 
 const shapes = []
@@ -24,6 +23,7 @@ const lookAheadFree = (row, positionInRow) => {
 }
 
 const fillMatrix = (matrix, x, y, { width, height }) => {
+  if(!width || !height) return matrix
   matrix[y].fill(1, x, x + width)
   for (let i of _.times(height)) {
     matrix[y + i].fill(1, x, x + width)
