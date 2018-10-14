@@ -23,7 +23,7 @@ const lookAheadFree = (row, positionInRow) => {
 }
 
 const fillMatrix = (matrix, x, y, { width, height }) => {
-  if(!width || !height) return matrix
+  if (!width || !height) return matrix
   matrix[y].fill(1, x, x + width)
   for (let i of _.times(height)) {
     matrix[y + i].fill(1, x, x + width)
@@ -55,6 +55,6 @@ const shapeCreator = (matrix, x, y) => {
 }
 const generateMatrix = squareLength => _.times(squareLength, () => 0).map(elem => _.times(squareLength, () => 0))
 
-const selectShape = () => possibleShapes[Math.floor(Math.random() * 5)]
+const selectShape = () => ({ ...possibleShapes[Math.floor(Math.random() * 5)], selected: false, hover: false })
 
 export { shapeCreator, generateMatrix }

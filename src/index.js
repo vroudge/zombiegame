@@ -1,49 +1,43 @@
-import _ from 'lodash'
-import { drawBox, drawShapes } from './draw'
+import { drawShapes } from './draw'
 import { generateMatrix, shapeCreator } from './terrain'
-import { getMousePos } from './events'
+import { mouseMove } from './events'
 
 const init = () => {
-  let mousePosition = { mx: 0, my: 0 }
-  let collisionWithBox = undefined
-
   const canvas = document.getElementById('canvas')
   const ctx = canvas.getContext('2d')
-  const mouseDebug = document.getElementById('mousedebug')
   const matrix = generateMatrix(10)
   const { shapes } = shapeCreator(matrix, 0, 0)
 
-  const matchCollide = (shapeList, { mx = 0, my = 0 }) => {
-    if (mx > 9) mx = 9
-    if (my > 9) my = 9
-    const foundCollision = _.find(shapeList, (elem) => {
-      return (
-        mx >= elem.x
-        && mx <= elem.x + (elem.width / 2)
-        && my >= elem.y
-        && my <= elem.y + (elem.height / 2)
-      )
-    })
-    return foundCollision ? foundCollision : undefined
-  }
+  let indexOfCollidingShape = undefined
+  let indexOfSelectedShape = undefined
 
-  canvas.addEventListener('mousemove', function (evt) {
-    mousePosition = getMousePos(canvas, evt)
-    collisionWithBox = { ...matchCollide(shapes, mousePosition), ...mousePosition }
-    mouseDebug.textContent = 'Mouse position: ' + mousePosition.mx + ',' + mousePosition.my
-  }, false)
+  canvas.addEventListener('mousemove', mouseMove(canvas, shapes, indexOfCollidingShape, (err, foundCollision) => {
+    indexOfCollidingShape = foundCollision
+    const previouslySelectedShape = shapes[_.findIndex(shapes, 'hover')]
+    if (previouslySelectedShape) {
+      previouslySelectedShape.hover = false
+    }
+    shapes[indexOfCollidingShape].hover = true
+  }), false)
+
+  canvas.addEventListener('click', mouseMove(canvas, shapes, indexOfCollidingShape, (err, foundCollision) => {
+    indexOfSelectedShape = foundCollision
+    const indexOfPreviouslySelectedShape = _.findIndex(shapes, 'selected')
+
+    if (shapes[indexOfPreviouslySelectedShape]) {
+      shapes[indexOfPreviouslySelectedShape].selected = false
+    }
+    if (indexOfSelectedShape !== indexOfPreviouslySelectedShape){
+      shapes[indexOfCollidingShape].selected = true
+    }
+  }), false)
 
   const draw = () => {
     ctx.clearRect(0, 0, 400, 400) // clear canvas
-
     drawShapes(canvas, shapes)
-    if (collisionWithBox) {
-      drawBox(canvas, collisionWithBox, '#FF0000')
-    }
-
     window.requestAnimationFrame(draw)
   }
   window.requestAnimationFrame(draw)
 }
 
-window.onload = init()
+window.onload = () => init()
