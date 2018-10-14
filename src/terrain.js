@@ -47,7 +47,7 @@ const shapeCreator = (matrix, x, y) => {
   shapes.push({ ...newShape, x, y })
   if (nextPositionX < config.totalSpaces) {
     return shapeCreator(matrix, nextPositionX, y)
-  } else if (y < 9) {
+  } else if (y < config.totalSpaces-1) {
     return shapeCreator(matrix, 0, y + 1)
   } else {
     return { matrix, shapes }

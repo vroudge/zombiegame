@@ -13,8 +13,8 @@ export const getMousePos = (canvas, evt) => {
 }
 
 const matchCollide = (shapeList, { mx = 0, my = 0 }) => {
-  if (mx > 9) mx = 9
-  if (my > 9) my = 9
+  if (mx > config.totalSpaces-1) mx = config.totalSpaces-1
+  if (my > config.totalSpaces-1) my = config.totalSpaces-1
   const foundCollision = _.findIndex(shapeList, (elem) => {
     return (
       mx >= elem.x

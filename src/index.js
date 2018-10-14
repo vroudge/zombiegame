@@ -1,11 +1,16 @@
 import { drawShapes } from './draw'
 import { generateMatrix, shapeCreator } from './terrain'
 import { mouseMove } from './events'
+import { config } from './config'
+
+// TODO starting point selection
+// TODO fog of war
+// TODO zombie starting points
 
 const init = () => {
   const canvas = document.getElementById('canvas')
   const ctx = canvas.getContext('2d')
-  const matrix = generateMatrix(10)
+  const matrix = generateMatrix(config.totalSpaces)
   const { shapes } = shapeCreator(matrix, 0, 0)
 
   let indexOfCollidingShape = undefined
@@ -30,10 +35,11 @@ const init = () => {
     if (indexOfSelectedShape !== indexOfPreviouslySelectedShape){
       shapes[indexOfCollidingShape].selected = true
     }
+    console.log(shapes[indexOfCollidingShape])
   }), false)
 
   const draw = () => {
-    ctx.clearRect(0, 0, 400, 400) // clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height) // clear canvas
     drawShapes(canvas, shapes)
     window.requestAnimationFrame(draw)
   }

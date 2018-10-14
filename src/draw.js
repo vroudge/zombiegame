@@ -14,10 +14,11 @@ export const drawBox = (canvas, shape) => {
     color = 'rgba(0, 0, 0, 0.5)'
   }
   ctx.strokeStyle = color
+  const strokeArgs = [shape.x * config.totalSpaces/5, shape.y * config.totalSpaces/5, shape.width * canvasPartLength, shape.height * canvasPartLength]
   if (!hasBasicColor) { // double dat stroke for selected/hover
-    ctx.strokeRect(shape.x * config.totalSpaces * 4, shape.y * config.totalSpaces * 4, shape.width * canvasPartLength, shape.height * canvasPartLength)
+    ctx.strokeRect(...strokeArgs)
   }
-  ctx.strokeRect(shape.x * config.totalSpaces * 4, shape.y * config.totalSpaces * 4, shape.width * canvasPartLength, shape.height * canvasPartLength)
+  ctx.strokeRect(...strokeArgs)
   return shape
 }
 
