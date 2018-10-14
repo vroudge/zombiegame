@@ -1,18 +1,20 @@
 import { drawShapes } from './draw'
-import { generateMatrix, shapeCreator } from './terrain'
+import { createGrid } from './terrain'
 import { mouseMove } from './events'
 import { config } from './config'
 
-// TODO starting point selection
-// TODO fog of war
-// TODO zombie starting points
+// TODO bugfix: 0,0 shape crashes
+// TODO starting points selection
+// TODO pathfinding between Zed starting point and player starting point
+// TODO fog of war / scouting
+// TODO generate ressources on scouting depending on shape size
+// TODO menu for each shape of the grid (select a shape)
+// TODO task system (ie: scout, move guy...)
 
 const init = () => {
   const canvas = document.getElementById('canvas')
   const ctx = canvas.getContext('2d')
-  const matrix = generateMatrix(config.totalSpaces)
-  const { shapes } = shapeCreator(matrix, 0, 0)
-
+  const { shapes } = createGrid(config.totalSpaces)
   let indexOfCollidingShape = undefined
   let indexOfSelectedShape = undefined
 
@@ -32,7 +34,7 @@ const init = () => {
     if (shapes[indexOfPreviouslySelectedShape]) {
       shapes[indexOfPreviouslySelectedShape].selected = false
     }
-    if (indexOfSelectedShape !== indexOfPreviouslySelectedShape){
+    if (indexOfSelectedShape !== indexOfPreviouslySelectedShape) {
       shapes[indexOfCollidingShape].selected = true
     }
     console.log(shapes[indexOfCollidingShape])

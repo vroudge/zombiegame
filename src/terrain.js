@@ -1,12 +1,9 @@
 import _ from 'lodash'
 import { config } from './config'
-import { possibleShapes } from './possible-shapes'
-
-const shapes = []
-const matrix = []
+import { shapeGenerator } from './shape-generator'
 
 const findFittingShape = (width, height) => {
-  const newShape = selectShape()
+  const newShape = shapeGenerator()
   if (height === 0 || width === 0) {
     return 0
   }
@@ -31,14 +28,14 @@ const fillMatrix = (matrix, x, y, { width, height }) => {
   return matrix
 }
 
-const shapeCreator = (matrix, x, y) => {
+const shapeInserter = (matrix, shapes, x, y) => {
   const possibleWidth = lookAheadFree(matrix[y], x)
   const possibleHeight = y < config.totalSpaces && matrix[y + 1] && matrix[y + 1][x] !== 1 ? 2 : 1
   if (possibleWidth === 0) {
     if (x < config.totalSpaces) {
-      return shapeCreator(matrix, x + 1, y)
+      return shapeInserter(matrix, shapes, x + 1, y)
     } else if (y < config.totalSpaces) {
-      return shapeCreator(matrix, 0, y + 1)
+      return shapeInserter(matrix, shapes, 0, y + 1)
     }
   }
   const newShape = findFittingShape(possibleWidth, possibleHeight)
@@ -46,15 +43,15 @@ const shapeCreator = (matrix, x, y) => {
   matrix = fillMatrix(matrix, x, y, newShape)
   shapes.push({ ...newShape, x, y })
   if (nextPositionX < config.totalSpaces) {
-    return shapeCreator(matrix, nextPositionX, y)
-  } else if (y < config.totalSpaces-1) {
-    return shapeCreator(matrix, 0, y + 1)
+    return shapeInserter(matrix, shapes, nextPositionX, y)
+  } else if (y < config.totalSpaces - 1) {
+    return shapeInserter(matrix, shapes, 0, y + 1)
   } else {
     return { matrix, shapes }
   }
 }
-const generateMatrix = squareLength => _.times(squareLength, () => 0).map(elem => _.times(squareLength, () => 0))
+const generateMatrix = squareLength => _.times(squareLength, () => 0).map(() => _.times(squareLength, () => 0))
 
-const selectShape = () => ({ ...possibleShapes[Math.floor(Math.random() * 5)], selected: false, hover: false })
+const createGrid = (matrixSize) => shapeInserter(generateMatrix(matrixSize), [], 0, 0)
 
-export { shapeCreator, generateMatrix }
+export { createGrid }
