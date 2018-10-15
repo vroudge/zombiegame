@@ -15,17 +15,13 @@ export const getMousePos = (canvas, viewportPosition, evt) => {
   return { mx, my }
 }
 
-const matchCollide = (shapeList, { mx = 0, my = 0 }) => {
-  const foundCollision = _.findIndex(shapeList, (elem) => {
-    return (
-      mx >= elem.x
-      && mx <= elem.x + (elem.width / 2)
-      && my >= elem.y
-      && my <= elem.y + (elem.height / 2)
-    )
-  })
-  return foundCollision ? foundCollision : undefined
-}
+const matchCollide = (shapeList, { mx = 0, my = 0 }) =>
+  _.findIndex(shapeList, (elem) => (
+    mx >= elem.x
+    && mx <= elem.x + (elem.width / 2)
+    && my >= elem.y
+    && my <= elem.y + (elem.height / 2)
+  ))
 
 export const mouseMove = (canvas, viewportPosition, shapes, indexOfCollidingShape, callback) => (evt) => {
   mousePosition = getMousePos(canvas, viewportPosition, evt)

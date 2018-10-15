@@ -3,7 +3,6 @@ import { createGrid } from './terrain'
 import { keyPress, mouseMove } from './events'
 import { config } from './config'
 
-// TODO bugfix: 0,0 shape location produces an error
 // TODO starting points selection
 // TODO pathfinding between Zed starting point and player starting point
 // TODO fog of war / scouting --> V
