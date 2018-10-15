@@ -12,6 +12,7 @@ import { config } from './config'
 // TODO menu for each shape of the grid (select a shape)
 // TODO task system (ie: scout, move guy...)
 // TODO save and load
+// TODO implement multitouch with hammer
 
 const init = () => {
   const canvas = document.getElementById('canvas')
@@ -43,31 +44,10 @@ const init = () => {
       if (indexOfSelectedShape !== indexOfPreviouslySelectedShape) {
         shapes[indexOfCollidingShape].selected = true
       }
-      console.log(shapes[indexOfCollidingShape])
     }
   ), false)
 
-  window.addEventListener('keydown', keyPress(ctx,
-    (err, translation) => {
-      if (viewportPosition[0] > -30 && translation[0] < 0) {
-        viewportPosition[0] += translation[0]
-        ctx.translate(translation[0], 0)
-      }
-      if (viewportPosition[0] < 30 && translation[0] > 0) {
-        viewportPosition[0] += translation[0]
-        ctx.translate(translation[0], 0)
-      }
-      if (viewportPosition[1] > -30 && translation[1] < 0) {
-        viewportPosition[1] += translation[1]
-        ctx.translate(0, translation[1])
-      }
-      console.log(translation, viewportPosition)
-      if (viewportPosition[1] < 30 && translation[1] > 0) {
-        viewportPosition[1] += translation[1]
-        ctx.translate(0, translation[1])
-      }
-    },
-  ), false)
+  window.addEventListener('keydown', keyPress(ctx, viewportPosition), false)
 
   const draw = () => {
     drawMapBorder(canvas, { x: -30, y: -30, width: 30 * 2 + canvas.width, height: 30 * 2 + canvas.height })
