@@ -3,12 +3,12 @@ import { createGrid } from './terrain'
 import { keyPress, mouseMove } from './events'
 import { config } from './config'
 
+// TODO contextual menu
 // TODO starting points selection
 // TODO pathfinding between Zed starting point and player starting point
 // TODO fog of war / scouting --> V
 // TODO Zoom + pan --> V
 // TODO generate ressources on scouting depending on shape size
-// TODO menu for each shape of the grid (select a shape)
 // TODO task system (ie: scout, move guy...)
 // TODO save and load
 // TODO implement multitouch with hammer
