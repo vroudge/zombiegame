@@ -2,6 +2,7 @@ import { drawMapBorder, drawShapes } from './draw'
 import { createGrid } from './terrain'
 import { keyPress, mouseMove } from './events'
 import { config } from './config'
+import { displayInMenu } from './menu'
 
 // TODO contextual menu
 // TODO starting points selection
@@ -42,6 +43,8 @@ const init = () => {
       if (indexOfSelectedShape !== indexOfPreviouslySelectedShape) {
         shapes[indexOfCollidingShape].selected = true
       }
+      displayInMenu(shapes[indexOfCollidingShape])
+      // shapes[indexOfCollidingShape].discovered = true
     }
   ), false)
 
