@@ -4,17 +4,19 @@ import _ from 'lodash'
 const mouseDebug = document.getElementById('mousedebug')
 let mousePosition = { mx: 0, my: 0 }
 
-export const getMousePos = (canvas, evt) => {
+export const getMousePos = (canvas, viewportPosition, evt) => {
   const rect = canvas.getBoundingClientRect()
-  return {
-    mx: Math.floor((evt.clientX - rect.left) / (canvas.width / config.totalSpaces)),
-    my: Math.floor((evt.clientY - rect.top) / (canvas.width / config.totalSpaces))
-  }
+  let mx = Math.floor((evt.clientX - rect.left - viewportPosition[0]) / (canvas.width / config.totalSpaces))
+  let my = Math.floor((evt.clientY - rect.top - viewportPosition[1]) / (canvas.width / config.totalSpaces))
+  if (mx >= config.totalSpaces) mx = config.totalSpaces - 1
+  if (my >= config.totalSpaces) my = config.totalSpaces - 1
+  if (mx <= 0) mx = 0
+  if (my <= 0) my = 0
+  console.log(mx, my)
+  return { mx, my }
 }
 
 const matchCollide = (shapeList, { mx = 0, my = 0 }) => {
-  if (mx > config.totalSpaces - 1) mx = config.totalSpaces - 1
-  if (my > config.totalSpaces - 1) my = config.totalSpaces - 1
   const foundCollision = _.findIndex(shapeList, (elem) => {
     return (
       mx >= elem.x
@@ -26,8 +28,8 @@ const matchCollide = (shapeList, { mx = 0, my = 0 }) => {
   return foundCollision ? foundCollision : undefined
 }
 
-export const mouseMove = (canvas, shapes, indexOfCollidingShape, callback) => (evt) => {
-  mousePosition = getMousePos(canvas, evt)
+export const mouseMove = (canvas, viewportPosition, shapes, indexOfCollidingShape, callback) => (evt) => {
+  mousePosition = getMousePos(canvas, viewportPosition, evt)
   indexOfCollidingShape = matchCollide(shapes, mousePosition)
   mouseDebug.textContent = 'Mouse position: ' + mousePosition.mx + ',' + mousePosition.my
   callback(null, indexOfCollidingShape)

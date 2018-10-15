@@ -22,7 +22,7 @@ const init = () => {
   let indexOfSelectedShape = undefined
   let viewportPosition = [0, 0]
 
-  canvas.addEventListener('mousemove', mouseMove(canvas, shapes, indexOfCollidingShape,
+  canvas.addEventListener('mousemove', mouseMove(canvas, viewportPosition, shapes, indexOfCollidingShape,
     (err, foundCollision) => {
       indexOfCollidingShape = foundCollision
       const previouslySelectedShape = shapes[_.findIndex(shapes, 'hover')]
