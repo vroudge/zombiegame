@@ -12,7 +12,6 @@ export const getMousePos = (canvas, viewportPosition, evt) => {
   if (my >= config.totalSpaces) my = config.totalSpaces - 1
   if (mx <= 0) mx = 0
   if (my <= 0) my = 0
-  console.log(mx, my)
   return { mx, my }
 }
 

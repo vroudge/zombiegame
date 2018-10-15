@@ -33,7 +33,7 @@ const init = () => {
     }
   ), false)
 
-  canvas.addEventListener('click', mouseMove(canvas, shapes, indexOfCollidingShape,
+  canvas.addEventListener('click', mouseMove(canvas, viewportPosition, shapes, indexOfCollidingShape,
     (err, foundCollision) => {
       indexOfSelectedShape = foundCollision
       const indexOfPreviouslySelectedShape = _.findIndex(shapes, 'selected')
