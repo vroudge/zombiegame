@@ -3,11 +3,12 @@ import _ from 'lodash'
 
 const mouseDebug = document.getElementById('mousedebug')
 let mousePosition = { mx: 0, my: 0 }
+let viewportPosition = { x: 0, y: 0 }
 
-export const getMousePos = (canvas, viewportPosition, evt) => {
+export const getMousePos = (canvas, evt) => {
   const rect = canvas.getBoundingClientRect()
-  let mx = Math.floor((evt.clientX - rect.left - viewportPosition[0]) / (canvas.width / config.totalSpaces))
-  let my = Math.floor((evt.clientY - rect.top - viewportPosition[1]) / (canvas.width / config.totalSpaces))
+  let mx = Math.floor((evt.clientX - rect.left - viewportPosition.x) / (canvas.width / config.totalSpaces))
+  let my = Math.floor((evt.clientY - rect.top - viewportPosition.y) / (canvas.width / config.totalSpaces))
   if (mx >= config.totalSpaces) mx = config.totalSpaces - 1
   if (my >= config.totalSpaces) my = config.totalSpaces - 1
   if (mx <= 0) mx = 0
@@ -23,14 +24,14 @@ const matchCollide = (shapeList, { mx = 0, my = 0 }) =>
     && my <= elem.y + (elem.height / 2)
   ))
 
-export const mouseMove = (canvas, viewportPosition, shapes, indexOfCollidingShape, callback) => (evt) => {
-  mousePosition = getMousePos(canvas, viewportPosition, evt)
+export const mouseMove = (canvas, shapes, indexOfCollidingShape, callback) => (evt) => {
+  mousePosition = getMousePos(canvas, evt)
   indexOfCollidingShape = matchCollide(shapes, mousePosition)
   mouseDebug.textContent = 'Mouse position: ' + mousePosition.mx + ',' + mousePosition.my
   callback(null, indexOfCollidingShape)
 }
 
-export const keyPress = (ctx, viewportPosition) => ({ keyCode }) => {
+export const keyPress = (ctx) => ({ keyCode }) => {
   let translateTo = [0, 0]
   switch (keyCode) {
     case 38: // up
@@ -53,20 +54,20 @@ export const keyPress = (ctx, viewportPosition) => ({ keyCode }) => {
       break
   }
 
-  if (viewportPosition[0] > -30 && translateTo[0] < 0) {
-    viewportPosition[0] += translateTo[0]
+  if (viewportPosition.x > -30 && translateTo[0] < 0) {
+    viewportPosition.x += translateTo[0]
     ctx.translate(...translateTo)
   }
-  if (viewportPosition[0] < 30 && translateTo[0] > 0) {
-    viewportPosition[0] += translateTo[0]
+  if (viewportPosition.x < 30 && translateTo[0] > 0) {
+    viewportPosition.x += translateTo[0]
     ctx.translate(...translateTo)
   }
-  if (viewportPosition[1] > -30 && translateTo[1] < 0) {
-    viewportPosition[1] += translateTo[1]
+  if (viewportPosition.y > -30 && translateTo[1] < 0) {
+    viewportPosition.y += translateTo[1]
     ctx.translate(...translateTo)
   }
-  if (viewportPosition[1] < 30 && translateTo[1] > 0) {
-    viewportPosition[1] += translateTo[1]
+  if (viewportPosition.y < 30 && translateTo[1] > 0) {
+    viewportPosition.y += translateTo[1]
     ctx.translate(...translateTo)
   }
 }

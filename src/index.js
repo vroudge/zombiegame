@@ -19,9 +19,8 @@ const init = () => {
   const { shapes } = createGrid(config.totalSpaces)
   let indexOfCollidingShape = undefined
   let indexOfSelectedShape = undefined
-  let viewportPosition = [0, 0]
 
-  canvas.addEventListener('mousemove', mouseMove(canvas, viewportPosition, shapes, indexOfCollidingShape,
+  canvas.addEventListener('mousemove', mouseMove(canvas, shapes, indexOfCollidingShape,
     (err, foundCollision) => {
       indexOfCollidingShape = foundCollision
       const previouslySelectedShape = shapes[_.findIndex(shapes, 'hover')]
@@ -32,7 +31,7 @@ const init = () => {
     }
   ), false)
 
-  canvas.addEventListener('click', mouseMove(canvas, viewportPosition, shapes, indexOfCollidingShape,
+  canvas.addEventListener('click', mouseMove(canvas, shapes, indexOfCollidingShape,
     (err, foundCollision) => {
       indexOfSelectedShape = foundCollision
       const indexOfPreviouslySelectedShape = _.findIndex(shapes, 'selected')
@@ -46,7 +45,7 @@ const init = () => {
     }
   ), false)
 
-  window.addEventListener('keydown', keyPress(ctx, viewportPosition), false)
+  window.addEventListener('keydown', keyPress(ctx), false)
 
   const draw = () => {
     drawMapBorder(canvas, { x: -30, y: -30, width: 30 * 2 + canvas.width, height: 30 * 2 + canvas.height })
