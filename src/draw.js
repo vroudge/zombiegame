@@ -4,7 +4,7 @@ export const drawBox = (canvas, shape) => {
   const ctx = canvas.getContext('2d')
   const canvasPartLength = canvas.width / config.totalSpaces
   const strokeArgs = [shape.x * config.totalSpaces / 5, shape.y * config.totalSpaces / 5, shape.width * canvasPartLength, shape.height * canvasPartLength]
-  let color = 'rgba(0, 0, 0, 0.2)'
+  let color = 'rgba(0, 0, 0, 0.1)'
   ctx.imageSmoothingEnabled = false
   ctx.globalAlpha = 1
 
@@ -13,7 +13,7 @@ export const drawBox = (canvas, shape) => {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
     ctx.fillRect(...strokeArgs)
   } else if (!shape.discovered && shape.hover) {
-    ctx.fillStyle = 'rgba(255, 255, 255 0.1)'
+    ctx.fillStyle = 'rgba(0,0,0,0.4)'
     ctx.fillRect(...strokeArgs)
   } else if (shape.discovered && shape.hover) {
     ctx.fillStyle = 'rgba(0, 255, 0, 0.2)'
@@ -23,7 +23,7 @@ export const drawBox = (canvas, shape) => {
   if (shape.selected) {
     color = 'rgba(255, 0, 0, 1)'
   } else if (shape.hover && !shape.selected) {
-    color = 'rgba(255, 255, 255, 0.8)'
+    color = 'rgba(255, 255, 255, 1)'
   }
 
   ctx.strokeStyle = color

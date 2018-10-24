@@ -3,14 +3,26 @@ import _ from 'lodash'
 import { displayInMenu } from './menu'
 
 const mouseDebug = document.getElementById('mousedebug')
+const dezoom = document.getElementById('dezoom')
+const zoom = document.getElementById('zoom')
+
 let mousePosition = { mx: 0, my: 0 }
-let viewportPosition = { x: 0, y: 0 }
+let viewportPosition = { x: 0, y: 0, zoom: 1 }
 let indexOfCollidingShape = undefined
 let indexOfSelectedShape = undefined
 
 export const bindEvents = (canvas, shapes) => {
   const ctx = canvas.getContext('2d')
-
+  dezoom.onclick = e => {
+    ctx.scale(0.5, 0.5)
+    viewportPosition.zoom = viewportPosition.zoom / 2
+    e.stopPropagation()
+  }
+  zoom.onclick = e => {
+    ctx.scale(2, 2)
+    viewportPosition.zoom = viewportPosition.zoom * 2
+    e.stopPropagation()
+  }
   canvas.addEventListener('mousemove', mouseMove(canvas, shapes, indexOfCollidingShape,
     (err, foundCollision) => {
       indexOfCollidingShape = foundCollision
@@ -43,8 +55,8 @@ export const bindEvents = (canvas, shapes) => {
 
 const getMousePos = (canvas, evt) => {
   const rect = canvas.getBoundingClientRect()
-  let mx = Math.floor((evt.clientX - rect.left - viewportPosition.x) / (canvas.width / config.totalSpaces))
-  let my = Math.floor((evt.clientY - rect.top - viewportPosition.y) / (canvas.width / config.totalSpaces))
+  let mx = Math.floor((evt.clientX - rect.left - viewportPosition.x) / (canvas.width * viewportPosition.zoom / config.totalSpaces))
+  let my = Math.floor((evt.clientY - rect.top - viewportPosition.y) / (canvas.height * viewportPosition.zoom / config.totalSpaces))
   if (mx >= config.totalSpaces) mx = config.totalSpaces - 1
   if (my >= config.totalSpaces) my = config.totalSpaces - 1
   if (mx <= 0) mx = 0
