@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import { config } from './config'
 import { shapeGenerator } from './shape-generator'
+import { matchCollide } from './events'
 
 const findFittingShape = (width, height) => {
   const newShape = shapeGenerator()
@@ -50,8 +51,17 @@ const shapeInserter = (matrix, shapes, x, y) => {
     return { matrix, shapes }
   }
 }
+
 const generateMatrix = squareLength => _.times(squareLength, () => 0).map(() => _.times(squareLength, () => 0))
 
 const createGrid = (matrixSize) => shapeInserter(generateMatrix(matrixSize), [], 0, 0)
 
-export { createGrid }
+const getRandomInGrid = (gridSize) => Math.floor(Math.random() * gridSize)
+
+const selectStartingPoint = (shapes) => {
+  let { mx, my } = { mx: getRandomInGrid(config.totalSpaces), my: getRandomInGrid(config.totalSpaces) }
+  const shapeIndex = matchCollide(shapes, { mx, my })
+  shapes[shapeIndex].discovered = true
+}
+
+export { createGrid, selectStartingPoint }

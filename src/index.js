@@ -1,8 +1,8 @@
 import { drawMapBorder, drawShapes } from './draw'
-import { createGrid } from './terrain'
-import { keyPress, mouseMove } from './events'
+import { createGrid, selectStartingPoint } from './terrain'
 import { config } from './config'
-import { displayInMenu } from './menu'
+import { bindEvents, matchCollide } from './events'
+import { loadGameState, persist, persistGameState } from './save'
 
 // TODO contextual menu
 // TODO starting points selection
@@ -17,45 +17,29 @@ import { displayInMenu } from './menu'
 const init = () => {
   const canvas = document.getElementById('canvas')
   const ctx = canvas.getContext('2d')
-  const { shapes } = createGrid(config.totalSpaces)
-  let indexOfCollidingShape = undefined
-  let indexOfSelectedShape = undefined
+  const { shapes, isNewGame } = loadGameState()
+  let fps = 30
+  let eachNthFrame = Math.round((1000 / fps) / 16.66)
+  let frameCount = eachNthFrame
 
-  canvas.addEventListener('mousemove', mouseMove(canvas, shapes, indexOfCollidingShape,
-    (err, foundCollision) => {
-      indexOfCollidingShape = foundCollision
-      const previouslySelectedShape = shapes[_.findIndex(shapes, 'hover')]
-      if (previouslySelectedShape) {
-        previouslySelectedShape.hover = false
-      }
-      shapes[indexOfCollidingShape].hover = true
-    }
-  ), false)
-
-  canvas.addEventListener('click', mouseMove(canvas, shapes, indexOfCollidingShape,
-    (err, foundCollision) => {
-      indexOfSelectedShape = foundCollision
-      const indexOfPreviouslySelectedShape = _.findIndex(shapes, 'selected')
-
-      if (shapes[indexOfPreviouslySelectedShape]) {
-        shapes[indexOfPreviouslySelectedShape].selected = false
-      }
-      if (indexOfSelectedShape !== indexOfPreviouslySelectedShape) {
-        shapes[indexOfCollidingShape].selected = true
-      }
-      displayInMenu(shapes[indexOfCollidingShape])
-      // shapes[indexOfCollidingShape].discovered = true
-    }
-  ), false)
-
-  window.addEventListener('keydown', keyPress(ctx), false)
+  if (isNewGame) {
+    selectStartingPoint(shapes)
+  } else {
+    persistGameState(shapes)
+  }
 
   const draw = () => {
-    drawMapBorder(canvas, { x: -30, y: -30, width: 30 * 2 + canvas.width, height: 30 * 2 + canvas.height })
-    ctx.clearRect(0, 0, canvas.width, canvas.height) // clear canvas
-    drawShapes(canvas, shapes)
     window.requestAnimationFrame(draw)
+    if (frameCount === eachNthFrame) {
+      frameCount = 0
+      ctx.clearRect(0, 0, canvas.width, canvas.height) // clear canvas
+      drawShapes(canvas, shapes)
+      // TODO redo drawMapBorder(canvas, { x: -30, y: -30, width: 30 * 2 + canvas.width, height: 30 * 2 + canvas.height })
+    }
+    frameCount++
   }
+
+  bindEvents(canvas, shapes)
   window.requestAnimationFrame(draw)
 }
 

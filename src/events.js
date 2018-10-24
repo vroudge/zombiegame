@@ -1,11 +1,47 @@
 import { config } from './config'
 import _ from 'lodash'
+import { displayInMenu } from './menu'
 
 const mouseDebug = document.getElementById('mousedebug')
 let mousePosition = { mx: 0, my: 0 }
 let viewportPosition = { x: 0, y: 0 }
+let indexOfCollidingShape = undefined
+let indexOfSelectedShape = undefined
 
-export const getMousePos = (canvas, evt) => {
+export const bindEvents = (canvas, shapes) => {
+  const ctx = canvas.getContext('2d')
+
+  canvas.addEventListener('mousemove', mouseMove(canvas, shapes, indexOfCollidingShape,
+    (err, foundCollision) => {
+      indexOfCollidingShape = foundCollision
+      const previouslySelectedShape = shapes[_.findIndex(shapes, 'hover')]
+      if (previouslySelectedShape) {
+        previouslySelectedShape.hover = false
+      }
+      shapes[indexOfCollidingShape].hover = true
+    }
+  ), false)
+
+  canvas.addEventListener('click', mouseMove(canvas, shapes, indexOfCollidingShape,
+    (err, foundCollision) => {
+      indexOfSelectedShape = foundCollision
+      const indexOfPreviouslySelectedShape = _.findIndex(shapes, 'selected')
+
+      if (shapes[indexOfPreviouslySelectedShape]) {
+        shapes[indexOfPreviouslySelectedShape].selected = false
+      }
+      if (indexOfSelectedShape !== indexOfPreviouslySelectedShape) {
+        shapes[indexOfCollidingShape].selected = true
+      }
+      displayInMenu(shapes[indexOfCollidingShape])
+      // shapes[indexOfCollidingShape].discovered = true
+    }
+  ), false)
+
+  window.addEventListener('keydown', keyPress(ctx), false)
+}
+
+const getMousePos = (canvas, evt) => {
   const rect = canvas.getBoundingClientRect()
   let mx = Math.floor((evt.clientX - rect.left - viewportPosition.x) / (canvas.width / config.totalSpaces))
   let my = Math.floor((evt.clientY - rect.top - viewportPosition.y) / (canvas.width / config.totalSpaces))
@@ -16,7 +52,7 @@ export const getMousePos = (canvas, evt) => {
   return { mx, my }
 }
 
-const matchCollide = (shapeList, { mx = 0, my = 0 }) =>
+export const matchCollide = (shapeList, { mx = 0, my = 0 }) =>
   _.findIndex(shapeList, (elem) => (
     mx >= elem.x
     && mx <= elem.x + (elem.width / 2)
@@ -24,14 +60,14 @@ const matchCollide = (shapeList, { mx = 0, my = 0 }) =>
     && my <= elem.y + (elem.height / 2)
   ))
 
-export const mouseMove = (canvas, shapes, indexOfCollidingShape, callback) => (evt) => {
+const mouseMove = (canvas, shapes, indexOfCollidingShape, callback) => (evt) => {
   mousePosition = getMousePos(canvas, evt)
   indexOfCollidingShape = matchCollide(shapes, mousePosition)
   mouseDebug.textContent = 'Mouse position: ' + mousePosition.mx + ',' + mousePosition.my
   callback(null, indexOfCollidingShape)
 }
 
-export const keyPress = (ctx) => ({ keyCode }) => {
+const keyPress = (ctx) => ({ keyCode }) => {
   let translateTo = [0, 0]
   switch (keyCode) {
     case 38: // up
