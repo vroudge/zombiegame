@@ -39,38 +39,74 @@ export const bindEvents = (canvas, shapes) => {
       indexOfSelectedShape = foundCollision
       const indexOfPreviouslySelectedShape = _.findIndex(shapes, 'selected')
 
+      // make clicked shape selected
       if (shapes[indexOfPreviouslySelectedShape]) {
         shapes[indexOfPreviouslySelectedShape].selected = false
       }
       if (indexOfSelectedShape !== indexOfPreviouslySelectedShape) {
         shapes[indexOfCollidingShape].selected = true
       }
+      // display debug menu of shape
       displayInMenu(shapes[indexOfCollidingShape])
-      // shapes[indexOfCollidingShape].discovered = true
+      setDiscoverableShapesAroundShape(shapes, indexOfSelectedShape)
+
     }
   ), false)
 
-  window.addEventListener('keydown', keyPress(ctx), false)
+  window.addEventListener('keydown', keyPress(canvas), false)
 }
 
-const getMousePos = (canvas, evt) => {
-  const rect = canvas.getBoundingClientRect()
-  let mx = Math.floor((evt.clientX - rect.left - viewportPosition.x) / (canvas.width * viewportPosition.zoom / config.totalSpaces))
-  let my = Math.floor((evt.clientY - rect.top - viewportPosition.y) / (canvas.height * viewportPosition.zoom / config.totalSpaces))
-  if (mx >= config.totalSpaces) mx = config.totalSpaces - 1
-  if (my >= config.totalSpaces) my = config.totalSpaces - 1
-  if (mx <= 0) mx = 0
-  if (my <= 0) my = 0
-  return { mx, my }
+export const getButtonHandlers = (key) => {
+  return {
+    'discover': (e) => {
+      console.info('discover')
+    }
+  }[key]
 }
 
-export const matchCollide = (shapeList, { mx = 0, my = 0 }) =>
-  _.findIndex(shapeList, (elem) => (
+export const setDiscoverableShapesAroundShape = (shapes, indexOfCurrentShape) => {
+  const { y: cy, x: cx, width, height, discovered } = shapes[indexOfCurrentShape]
+  if (!discovered) {
+    return []
+  }
+
+  const currentShapeGridLocations = []
+  // get all points of current shape
+  for (let i = cx; i <= (cx + (width / 2)); i++) {
+    for (let y = cy; y <= (cy + (height / 2)); y++) {
+      currentShapeGridLocations.push({ x: i, y })
+    }
+  }
+  // get points around each grid of shape
+  let arr = []
+  for (const point of currentShapeGridLocations) {
+    arr.push({ x: point.x - 1, y: point.y })
+    arr.push({ x: point.x + 1, y: point.y })
+    arr.push({ x: point.x, y: point.y - 1 })
+    arr.push({ x: point.x, y: point.y + 1 })
+  }
+  // filter points of shape
+  return Array.from(
+    new Set(
+      arr
+        .filter(e => {
+          return !_.find(currentShapeGridLocations, e)
+        })
+        .map(point => matchCollide(shapes, { mx: point.x, my: point.y }))
+    )
+  )
+    .map(e => shapes[e])
+    .forEach(shape => shape.discoverable = true)
+}
+
+export const matchCollide = (shapeList, { mx = 0, my = 0 }) => {
+  return _.findIndex(shapeList, (elem) => (
     mx >= elem.x
     && mx <= elem.x + (elem.width / 2)
     && my >= elem.y
     && my <= elem.y + (elem.height / 2)
   ))
+}
 
 const mouseMove = (canvas, shapes, indexOfCollidingShape, callback) => (evt) => {
   mousePosition = getMousePos(canvas, evt)
@@ -79,7 +115,8 @@ const mouseMove = (canvas, shapes, indexOfCollidingShape, callback) => (evt) => 
   callback(null, indexOfCollidingShape)
 }
 
-const keyPress = (ctx) => ({ keyCode }) => {
+const keyPress = canvas => ({ keyCode }) => {
+  const ctx = canvas.getContext('2d')
   let translateTo = [0, 0]
   switch (keyCode) {
     case 38: // up
@@ -118,4 +155,15 @@ const keyPress = (ctx) => ({ keyCode }) => {
     viewportPosition.y += translateTo[1]
     ctx.translate(...translateTo)
   }
+}
+
+const getMousePos = (canvas, evt) => {
+  const rect = canvas.getBoundingClientRect()
+  let mx = Math.floor((evt.clientX - rect.left - (viewportPosition.x * viewportPosition.zoom)) / (canvas.width / config.totalSpaces) / viewportPosition.zoom)
+  let my = Math.floor((evt.clientY - rect.top - (viewportPosition.y * viewportPosition.zoom)) / (canvas.height / config.totalSpaces) / viewportPosition.zoom)
+  if (mx >= config.totalSpaces) mx = config.totalSpaces - 1
+  if (my >= config.totalSpaces) my = config.totalSpaces - 1
+  if (mx <= 0) mx = 0
+  if (my <= 0) my = 0
+  return { mx, my }
 }

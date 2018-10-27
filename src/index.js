@@ -1,7 +1,7 @@
 import { drawMapBorder, drawShapes } from './draw'
 import { createGrid, selectStartingPoint } from './terrain'
 import { config } from './config'
-import { bindEvents, matchCollide } from './events'
+import { bindEvents, setDiscoverableShapesAroundShape, matchCollide } from './events'
 import { loadGameState, persist, persistGameState } from './save'
 
 // TODO contextual menu
@@ -23,10 +23,9 @@ const init = () => {
   let frameCount = eachNthFrame
 
   if (isNewGame) {
-    selectStartingPoint(shapes)
-  } else {
-    persistGameState(shapes)
+    setDiscoverableShapesAroundShape(shapes, selectStartingPoint(shapes))
   }
+  persistGameState(shapes)
 
   const draw = () => {
     window.requestAnimationFrame(draw)

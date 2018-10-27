@@ -62,6 +62,7 @@ const selectStartingPoint = (shapes) => {
   let { mx, my } = { mx: getRandomInGrid(config.totalSpaces), my: getRandomInGrid(config.totalSpaces) }
   const shapeIndex = matchCollide(shapes, { mx, my })
   shapes[shapeIndex].discovered = true
+  return shapeIndex
 }
 
 export { createGrid, selectStartingPoint }

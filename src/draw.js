@@ -19,7 +19,6 @@ export const drawBox = (canvas, shape) => {
     ctx.fillStyle = 'rgba(0, 255, 0, 0.2)'
     ctx.fillRect(...strokeArgs)
   }
-
   if (shape.selected) {
     color = 'rgba(255, 0, 0, 1)'
   } else if (shape.hover && !shape.selected) {
